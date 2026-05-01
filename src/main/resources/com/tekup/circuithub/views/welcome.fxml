@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.Group?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.tekup.circuithub.controllers.WelcomeController"
+           styleClass="welcome-root"
+           prefWidth="1280" prefHeight="800">
+
+    <!-- Animated circuit pattern overlay -->
+    <Group fx:id="circuitOverlay" styleClass="circuit-overlay">
+        <SVGPath stroke="#22D3EE" strokeWidth="1" fill="transparent"
+                 content="M 20 20 H 200 V 80 H 340 M 20 160 H 120 V 240 H 280 V 140 H 420 M 40 320 H 200 V 400 H 360 M 20 480 H 140 V 560 H 320 V 460 H 460 M 60 640 H 220 V 720 H 380 M 500 40 H 660 V 140 H 820 M 540 240 H 700 V 320 H 880 V 220 H 1020 M 520 420 H 680 V 520 H 860 M 560 620 H 720 V 700 H 920 M 1040 60 H 1220 M 1080 180 H 1220 V 260 H 1360 M 1060 360 H 1240 V 440 H 1380 M 1080 540 H 1240 V 620 H 1400"/>
+        <SVGPath stroke="#A78BFA" strokeWidth="0.8" fill="transparent" opacity="0.5"
+                 content="M 100 100 V 200 H 260 M 380 120 V 260 H 520 M 180 360 V 500 H 340 M 460 480 V 600 H 620 M 760 80 V 220 H 900 M 860 340 V 500 H 1020 M 1100 140 V 300 H 1240 M 1140 420 V 560 H 1300"/>
+        <!-- solder dots -->
+        <SVGPath fill="#22D3EE" content="M 200 20 m -3 0 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0"/>
+        <SVGPath fill="#A78BFA" content="M 280 240 m -3 0 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0"/>
+        <SVGPath fill="#22D3EE" content="M 660 140 m -3 0 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0"/>
+        <SVGPath fill="#A78BFA" content="M 880 320 m -3 0 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0"/>
+        <SVGPath fill="#22D3EE" content="M 1220 260 m -3 0 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0"/>
+    </Group>
+
+    <!-- Halo behind logo -->
+    <StackPane fx:id="haloLayer" maxWidth="-Infinity" maxHeight="-Infinity">
+        <Circle radius="220" fill="radial-gradient(center 50% 50%, radius 60%, rgba(34,211,238,0.32) 0%, rgba(34,211,238,0) 70%)"/>
+        <Circle radius="160" fill="radial-gradient(center 50% 50%, radius 60%, rgba(167,139,250,0.22) 0%, rgba(167,139,250,0) 70%)"/>
+    </StackPane>
+
+    <VBox alignment="CENTER" spacing="22" maxWidth="-Infinity" maxHeight="-Infinity">
+        <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+        <!-- Status pill -->
+        <HBox alignment="CENTER" spacing="8">
+            <Region prefWidth="8" prefHeight="8"
+                    style="-fx-background-color: #34D399; -fx-background-radius: 4; -fx-effect: dropshadow(gaussian, rgba(52,211,153,0.7), 10, 0.5, 0, 0);"/>
+            <Label text="ONLINE · 36 COMPONENTS IN STOCK"
+                   style="-fx-font-family: 'JetBrains Mono', 'Consolas', monospace; -fx-font-size: 10.5px; -fx-text-fill: #67E8F9; -fx-font-weight: bold;"/>
+        </HBox>
+
+        <Label fx:id="logoLabel" text="CircuitHub" styleClass="logo-label"/>
+        <Label text="//  POWER YOUR NEXT BUILD  //" styleClass="tagline"/>
+
+        <Region prefHeight="22"/>
+
+        <Button fx:id="enterButton" text="ENTER STORE  →" styleClass="btn-primary"
+                onAction="#onEnter"/>
+
+        <Region prefHeight="14"/>
+        <Label text="v1.0  ·  arduino  ·  raspberry pi  ·  esp32  ·  sensors  ·  modules"
+               style="-fx-font-family: 'JetBrains Mono', 'Consolas', monospace; -fx-font-size: 10.5px; -fx-text-fill: #475569; -fx-letter-spacing: 1px;"/>
+    </VBox>
+</StackPane>

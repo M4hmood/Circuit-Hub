@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.tekup.circuithub.controllers.SignUpController"
+           styleClass="welcome-root"
+           prefWidth="1280" prefHeight="800">
+
+    <VBox styleClass="panel" alignment="TOP_CENTER" spacing="14"
+          maxWidth="460" maxHeight="640">
+        <padding><Insets top="30" right="32" bottom="28" left="32"/></padding>
+
+        <Label text="CircuitHub" styleClass="logo-label" style="-fx-font-size: 28px;"/>
+        <Label text="Create your account" styleClass="text-secondary"
+               style="-fx-font-size: 13px;"/>
+
+        <Region prefHeight="8"/>
+
+        <StackPane prefHeight="40">
+            <TextField fx:id="nameField" promptText="Full name" styleClass="terminal-field" style="-fx-padding: 10 12 10 35;"/>
+            <Label text="👤" StackPane.alignment="CENTER_LEFT" style="-fx-font-size: 14px; -fx-text-fill: #94A3B8; -fx-padding: 0 0 0 12;"/>
+        </StackPane>
+
+        <Region prefHeight="8"/>
+
+        <StackPane prefHeight="40">
+            <TextField fx:id="emailField" promptText="Email address" styleClass="terminal-field" style="-fx-padding: 10 12 10 35;"/>
+            <Label text="✉" StackPane.alignment="CENTER_LEFT" style="-fx-font-size: 14px; -fx-text-fill: #94A3B8; -fx-padding: 0 0 0 12;"/>
+        </StackPane>
+
+        <Region prefHeight="8"/>
+
+        <StackPane prefHeight="40">
+            <PasswordField fx:id="passwordField" promptText="Password (minimum 6 characters)" styleClass="terminal-field" style="-fx-padding: 10 12 10 35;"/>
+            <Label text="🔒" StackPane.alignment="CENTER_LEFT" style="-fx-font-size: 14px; -fx-text-fill: #94A3B8; -fx-padding: 0 0 0 12;"/>
+        </StackPane>
+
+        <ProgressBar fx:id="strengthBar" prefWidth="400" progress="0.0"
+                     style="-fx-accent: #EF4444;"/>
+         <Label fx:id="strengthLabel" text="Strength: —" styleClass="text-secondary"
+                style="-fx-font-size: 11px;"/>
+
+         <Region prefHeight="8"/>
+
+          <StackPane prefHeight="40">
+              <PasswordField fx:id="confirmField" promptText="Confirm password" styleClass="terminal-field" style="-fx-padding: 10 12 10 35;"/>
+              <Label text="✓" StackPane.alignment="CENTER_LEFT" style="-fx-font-size: 14px; -fx-text-fill: #94A3B8; -fx-padding: 0 0 0 12;"/>
+          </StackPane>
+
+        <Label fx:id="errorLabel" text=" "
+               style="-fx-text-fill: #EF4444; -fx-font-size: 12px;"/>
+
+        <Button text="Create Account" styleClass="btn-primary"
+                onAction="#onSignUp" maxWidth="Infinity"/>
+
+        <HBox alignment="CENTER" spacing="6">
+            <Label text="Already have an account?" styleClass="text-secondary"/>
+            <Hyperlink text="Sign in" onAction="#onBack"
+                       style="-fx-text-fill: #3B82F6; -fx-border-color: transparent;"/>
+        </HBox>
+    </VBox>
+</StackPane>

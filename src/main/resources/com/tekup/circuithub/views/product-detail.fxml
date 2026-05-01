@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.tekup.circuithub.controllers.ProductDetailController"
+            styleClass="welcome-root"
+            prefWidth="1280" prefHeight="800">
+
+    <left>
+        <VBox styleClass="sidebar" prefWidth="200" spacing="4">
+            <Label text="◢ CircuitHub" styleClass="sidebar-brand"/>
+            <Button text="⌂  Home"     styleClass="nav-btn" onAction="#navHome"/>
+            <Button text="▤  Products" styleClass="nav-btn,active" onAction="#navProducts"/>
+            <Button text="◉  Cart"     styleClass="nav-btn" onAction="#navCart"/>
+            <Button text="≡  Orders"   styleClass="nav-btn" onAction="#navOrders"/>
+            <Button text="◈  Profile"  styleClass="nav-btn" onAction="#navProfile"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="⏻  Logout"   styleClass="nav-btn" onAction="#onLogout"/>
+        </VBox>
+    </left>
+
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="content-area"
+                    style="-fx-background: #0F172A; -fx-background-color: #0F172A;">
+            <VBox spacing="18">
+                <padding><Insets top="20" right="28" bottom="28" left="28"/></padding>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button text="← back" styleClass="btn-secondary" onAction="#navProducts"/>
+                    <Label fx:id="breadcrumb" text="// products /" styleClass="page-sub"/>
+                </HBox>
+
+                <HBox spacing="28">
+                    <!-- Left: image + thumbs -->
+                    <VBox spacing="12" prefWidth="460">
+                        <StackPane styleClass="panel" minHeight="360" maxHeight="360">
+                            <ImageView fx:id="mainImage" fitWidth="420" fitHeight="320"
+                                       preserveRatio="true" smooth="true"/>
+                        </StackPane>
+                        <HBox fx:id="thumbsRow" spacing="10"/>
+                    </VBox>
+
+                    <!-- Right: info -->
+                    <VBox spacing="14" HBox.hgrow="ALWAYS">
+                        <Label fx:id="categoryChip" text="—" styleClass="chip-category"/>
+                         <Label fx:id="nameLabel" text="—" styleClass="detail-name" wrapText="true"/>
+                         <Label fx:id="priceLabel" text="—" styleClass="detail-price"/>
+                         <Label fx:id="stockLabel" text="—" styleClass="mono"/>
+
+                        <Label text="// description" styleClass="page-sub"/>
+                        <Label fx:id="descLabel" text="—" styleClass="datasheet" wrapText="true"/>
+
+                        <Label text="// technical specs" styleClass="page-sub"/>
+                        <GridPane fx:id="specsGrid" hgap="20" vgap="0"
+                                  styleClass="panel" style="-fx-padding: 10 16 10 16;"/>
+
+                        <HBox spacing="16" alignment="CENTER_LEFT">
+                            <Label text="qty" styleClass="filter-label"/>
+                            <Button text="−" fx:id="qtyMinus" styleClass="qty-btn" onAction="#onQtyMinus"/>
+                            <Label fx:id="qtyLabel" text="1" styleClass="qty-value"/>
+                            <Button text="+" fx:id="qtyPlus" styleClass="qty-btn" onAction="#onQtyPlus"/>
+                        </HBox>
+
+                        <Button fx:id="addToCartBtn" text="＋ ADD TO CART"
+                                styleClass="btn-add-large" onAction="#onAddToCart"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>
