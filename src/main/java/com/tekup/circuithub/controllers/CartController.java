@@ -4,6 +4,7 @@ import com.tekup.circuithub.models.CartItem;
 import com.tekup.circuithub.models.Order;
 import com.tekup.circuithub.models.User;
 import com.tekup.circuithub.utils.DataStore;
+import com.tekup.circuithub.utils.ImageLoader;
 import com.tekup.circuithub.utils.SceneManager;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -82,7 +83,7 @@ public class CartController {
         ImageView iv = new ImageView();
         iv.setFitWidth(88); iv.setFitHeight(64);
         iv.setPreserveRatio(true); iv.setSmooth(true);
-        try { iv.setImage(new Image(ci.getProduct().getImageUrl(), 88, 64, true, true, true)); } catch (Exception ignored) {}
+        ImageLoader.setForProductAsync(iv, ci.getProduct(), 88, 64);
         StackPane thumb = new StackPane(iv);
         thumb.getStyleClass().add("product-thumb");
         thumb.setPrefSize(96, 72);

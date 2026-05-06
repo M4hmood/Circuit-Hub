@@ -2,6 +2,7 @@ package com.tekup.circuithub.controllers;
 
 import com.tekup.circuithub.models.Product;
 import com.tekup.circuithub.utils.DataStore;
+import com.tekup.circuithub.utils.ImageLoader;
 import com.tekup.circuithub.utils.SceneManager;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -76,22 +77,20 @@ public class ProductsController {
     private VBox buildCard(Product p) {
         VBox card = new VBox(10);
         card.getStyleClass().add("product-card");
-        card.setPrefWidth(220);
+        card.setPrefWidth(260);
         card.setPrefHeight(320);
-        card.setMaxWidth(220);
+        card.setMaxWidth(260);
 
         ImageView iv = new ImageView();
-        iv.setFitWidth(192);
-        iv.setFitHeight(130);
+        iv.setFitWidth(232);
+        iv.setFitHeight(140);
         iv.setPreserveRatio(true);
         iv.setSmooth(true);
-        try {
-            iv.setImage(new Image(p.getImageUrl(), 192, 130, true, true, true));
-        } catch (Exception ignored) {}
+        ImageLoader.setForProductAsync(iv, p, 192, 130);
         VBox thumb = new VBox(iv);
         thumb.getStyleClass().add("product-thumb");
         thumb.setPrefHeight(140);
-        thumb.setStyle(thumb.getStyle() + "; -fx-alignment: center; -fx-padding: 5;");
+        thumb.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 10; -fx-alignment: center; -fx-padding: 8;");
 
         Label cat = new Label(p.getCategory().toUpperCase());
         cat.getStyleClass().add("chip-category");

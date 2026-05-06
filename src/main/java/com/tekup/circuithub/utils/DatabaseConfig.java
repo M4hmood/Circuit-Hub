@@ -4,12 +4,30 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class DatabaseConfig {
-    private static final String URL = "jdbc:postgresql://localhost:5432/circuithub";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "postgres";
+    private static final String URL;
+    private static final String USER;
+    private static final String PASSWORD;
+
+    static {
+        Properties props = new Properties();
+        try (var in = DatabaseConfig.class.getResourceAsStream(
+                "/com/tekup/circuithub/config.properties")) {
+            if (in != null) {
+                props.load(in);
+            } else {
+                System.err.println("✗ config.properties not found, using defaults");
+            }
+        } catch (Exception e) {
+            System.err.println("✗ Failed to load config.properties: " + e.getMessage());
+        }
+        URL      = props.getProperty("db.url",      "jdbc:postgresql://localhost:5432/circuithub");
+        USER     = props.getProperty("db.user",     "postgres");
+        PASSWORD = props.getProperty("db.password", "postgres");
+    }
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
@@ -30,6 +48,11 @@ public class DatabaseConfig {
                 """);
             }
 
+            // Idempotent role column for existing installs
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) NOT NULL DEFAULT 'USER'");
+            }
+
             // Create products table
             try (Statement stmt = conn.createStatement()) {
                 stmt.execute("""
@@ -43,6 +66,11 @@ public class DatabaseConfig {
                         stock INT NOT NULL
                     )
                 """);
+            }
+
+            // Idempotent image_data column for existing installs
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute("ALTER TABLE products ADD COLUMN IF NOT EXISTS image_data BYTEA");
             }
 
             // Create product_specs table
@@ -100,15 +128,10 @@ public class DatabaseConfig {
             if (in == null) { System.err.println("✗ seed.sql not found"); return; }
             String sql = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))
                     .lines().collect(Collectors.joining("\n"));
-            for (String statement : sql.split(";")) {
-                // Strip leading comment lines — a block may start with "-- ..." before the SQL keyword
-                String trimmed = statement.lines()
-                        .filter(line -> !line.strip().startsWith("--"))
-                        .collect(Collectors.joining("\n"))
-                        .strip();
-                if (!trimmed.isEmpty()) {
+            for (String statement : splitStatements(sql)) {
+                if (!statement.isBlank()) {
                     try (Statement stmt = conn.createStatement()) {
-                        stmt.execute(trimmed);
+                        stmt.execute(statement);
                     }
                 }
             }
@@ -117,6 +140,46 @@ public class DatabaseConfig {
             System.err.println("✗ Seed failed: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    /** Split SQL on semicolons that are outside single-quoted string literals and -- comments. */
+    private static java.util.List<String> splitStatements(String sql) {
+        java.util.List<String> result = new java.util.ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        boolean inString = false;
+        boolean inLineComment = false;
+        for (int i = 0; i < sql.length(); i++) {
+            char c = sql.charAt(i);
+            if (inLineComment) {
+                if (c == '\n') {
+                    inLineComment = false;
+                    current.append(c);
+                }
+                // skip comment characters (don't append them)
+            } else if (c == '-' && !inString && i + 1 < sql.length() && sql.charAt(i + 1) == '-') {
+                inLineComment = true;
+                i++; // skip second '-'
+            } else if (c == '\'' && !inString) {
+                inString = true;
+                current.append(c);
+            } else if (c == '\'' && inString) {
+                current.append(c);
+                if (i + 1 < sql.length() && sql.charAt(i + 1) == '\'') {
+                    current.append(sql.charAt(++i)); // escaped ''
+                } else {
+                    inString = false;
+                }
+            } else if (c == ';' && !inString) {
+                String trimmed = current.toString().strip();
+                if (!trimmed.isEmpty()) result.add(trimmed);
+                current.setLength(0);
+            } else {
+                current.append(c);
+            }
+        }
+        String trimmed = current.toString().strip();
+        if (!trimmed.isEmpty()) result.add(trimmed);
+        return result;
     }
 }
 

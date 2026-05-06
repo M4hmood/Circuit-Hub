@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.tekup.circuithub.controllers.AdminOrdersController"
+            styleClass="welcome-root"
+            prefWidth="1280" prefHeight="800">
+
+    <left>
+        <VBox styleClass="sidebar" prefWidth="200" spacing="4">
+            <Label text="◢ CircuitHub" styleClass="sidebar-brand"/>
+            <Label text="// ADMIN CONSOLE" styleClass="page-sub"/>
+            <Button text="◆  Dashboard" styleClass="nav-btn"        onAction="#navAdminDashboard"/>
+            <Button text="▤  Products"  styleClass="nav-btn"        onAction="#navAdminProducts"/>
+            <Button text="≡  Orders"    styleClass="nav-btn,active" onAction="#navAdminOrders"/>
+            <Button text="◉  Users"     styleClass="nav-btn"        onAction="#navAdminUsers"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="⏻  Logout"    styleClass="nav-btn"        onAction="#onLogout"/>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="18" style="-fx-background-color: #0F172A;">
+            <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
+
+            <HBox spacing="14" alignment="CENTER_LEFT">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Orders" styleClass="page-title"/>
+                    <Label text="// fulfilment &amp; status board" styleClass="page-sub"/>
+                </VBox>
+                <Label text="Filter:" styleClass="text-muted"/>
+                <ComboBox fx:id="filterCombo" styleClass="combo,combo-box" prefWidth="160"/>
+            </HBox>
+
+            <TableView fx:id="ordersTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colOrderId" text="Order ID" prefWidth="170"/>
+                    <TableColumn fx:id="colUserId"  text="User ID"  prefWidth="220"/>
+                    <TableColumn fx:id="colDate"    text="Date"     prefWidth="120"/>
+                    <TableColumn fx:id="colItems"   text="Items"    prefWidth="80"/>
+                    <TableColumn fx:id="colTotal"   text="Total"    prefWidth="100"/>
+                    <TableColumn fx:id="colStatus"  text="Status"   prefWidth="160"/>
+                    <TableColumn fx:id="colDetails" text="Details"  prefWidth="160"/>
+                </columns>
+            </TableView>
+
+            <VBox fx:id="detailsPanel" spacing="8" styleClass="panel" visible="false" managed="false">
+                <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
+                <Label fx:id="detailsTitle" text="Order items" styleClass="page-sub"/>
+                <VBox fx:id="detailsBox" spacing="6"/>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

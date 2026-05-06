@@ -33,7 +33,7 @@ public class SignInController {
             return;
         }
         DataStore.setCurrentUser(u);
-        SceneManager.getInstance().switchTo("dashboard", true);
+        SceneManager.getInstance().switchTo(u.isAdmin() ? "admin-dashboard" : "dashboard", true);
     }
 
     @FXML

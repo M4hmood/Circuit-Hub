@@ -8,6 +8,7 @@ public class User {
     private String email;
     private String passwordHash;
     private String joinDate;
+    private String role = "USER";
 
     public User() {}
 
@@ -24,10 +25,14 @@ public class User {
     public String getEmail() { return email; }
     public String getPasswordHash() { return passwordHash; }
     public String getJoinDate() { return joinDate; }
+    public String getRole() { return role; }
 
     public void setId(String id) { this.id = id; }
     public void setFullName(String fullName) { this.fullName = fullName; }
     public void setEmail(String email) { this.email = email; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
     public void setJoinDate(String joinDate) { this.joinDate = joinDate; }
+    public void setRole(String role) { this.role = role; }
+
+    public boolean isAdmin() { return "ADMIN".equalsIgnoreCase(role); }
 }

@@ -2,6 +2,7 @@ package com.tekup.circuithub.controllers;
 
 import com.tekup.circuithub.models.Product;
 import com.tekup.circuithub.utils.DataStore;
+import com.tekup.circuithub.utils.ImageLoader;
 import com.tekup.circuithub.utils.SceneManager;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
@@ -56,23 +57,20 @@ public class ProductDetailController {
         else if (s < 20) { stockLabel.setText("// low stock · " + s + " left"); stockLabel.getStyleClass().add("stock-low"); }
         else { stockLabel.setText("// in stock · " + s + " units"); stockLabel.getStyleClass().add("stock-in"); }
 
-        try {
-            mainImage.setImage(new Image(product.getImageUrl(), 420, 320, true, true, true));
-        } catch (Exception ignored) {}
+        ImageLoader.setForProductAsync(mainImage, product, 420, 320);
 
         // Thumbnails — repeat main image with tinted overlays
         for (int i = 0; i < 3; i++) {
             ImageView t = new ImageView();
             t.setFitWidth(100); t.setFitHeight(70);
             t.setPreserveRatio(true); t.setSmooth(true);
-            try { t.setImage(new Image(product.getImageUrl(), 100, 70, true, true, true)); } catch (Exception ignored) {}
+            ImageLoader.setForProductAsync(t, product, 100, 70);
             StackPane frame = new StackPane(t);
             frame.getStyleClass().add("panel");
             frame.setStyle("-fx-padding: 6; -fx-cursor: hand;");
             frame.setPrefSize(110, 80);
-            frame.setOnMouseClicked(e -> {
-                try { mainImage.setImage(new Image(product.getImageUrl(), 420, 320, true, true, true)); } catch (Exception ignored) {}
-            });
+            frame.setOnMouseClicked(e ->
+                ImageLoader.setForProductAsync(mainImage, product, 420, 320));
             thumbsRow.getChildren().add(frame);
         }
 

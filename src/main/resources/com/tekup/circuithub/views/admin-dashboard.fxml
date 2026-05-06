@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.tekup.circuithub.controllers.AdminDashboardController"
+            styleClass="welcome-root"
+            prefWidth="1280" prefHeight="800">
+
+    <left>
+        <VBox styleClass="sidebar" prefWidth="200" spacing="4">
+            <Label text="◢ CircuitHub" styleClass="sidebar-brand"/>
+            <Label text="// ADMIN CONSOLE" styleClass="page-sub"/>
+            <Button text="◆  Dashboard" styleClass="nav-btn,active" onAction="#navAdminDashboard"/>
+            <Button text="▤  Products"  styleClass="nav-btn"        onAction="#navAdminProducts"/>
+            <Button text="≡  Orders"    styleClass="nav-btn"        onAction="#navAdminOrders"/>
+            <Button text="◉  Users"     styleClass="nav-btn"        onAction="#navAdminUsers"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="⏻  Logout"    styleClass="nav-btn"        onAction="#onLogout"/>
+        </VBox>
+    </left>
+
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="content-area"
+                    style="-fx-background: #0F172A; -fx-background-color: #0F172A;">
+            <VBox spacing="22">
+                <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
+
+                <VBox spacing="4">
+                    <Label text="Admin Dashboard" styleClass="page-title"/>
+                    <Label text="// store overview &amp; signal monitor" styleClass="page-sub"/>
+                </VBox>
+
+                <!-- KPI tiles -->
+                <HBox spacing="14">
+                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6">
+                        <Label text="REVENUE" styleClass="stat-key"/>
+                        <Label fx:id="revenueValue" text="\$0.00" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6">
+                        <Label text="ORDERS" styleClass="stat-key"/>
+                        <Label fx:id="ordersValue" text="0" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6">
+                        <Label text="USERS" styleClass="stat-key"/>
+                        <Label fx:id="usersValue" text="0" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6">
+                        <Label text="PRODUCTS" styleClass="stat-key"/>
+                        <Label fx:id="productsValue" text="0" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6">
+                        <Label text="LOW STOCK" styleClass="stat-key"/>
+                        <Label fx:id="lowStockValue" text="0" styleClass="stat-value admin-accent"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Recent orders -->
+                <VBox spacing="10" styleClass="panel">
+                    <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                    <Label text="Recent Orders" styleClass="page-sub"/>
+                    <VBox fx:id="recentOrdersBox" spacing="8"/>
+                </VBox>
+
+                <!-- Low stock -->
+                <VBox spacing="10" styleClass="panel">
+                    <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                    <Label text="Low Stock Alerts" styleClass="page-sub"/>
+                    <VBox fx:id="lowStockBox" spacing="8"/>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

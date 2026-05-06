@@ -23,7 +23,7 @@ public class DataStore {
     // ---- Users ----
     public static List<User> loadUsers() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT id, full_name, email, password_hash, join_date FROM users";
+        String sql = "SELECT id, full_name, email, password_hash, join_date, role FROM users ORDER BY join_date DESC";
         try (Connection conn = DatabaseConfig.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -34,6 +34,7 @@ public class DataStore {
                 u.setEmail(rs.getString("email"));
                 u.setPasswordHash(rs.getString("password_hash"));
                 u.setJoinDate(rs.getString("join_date"));
+                u.setRole(rs.getString("role"));
                 users.add(u);
             }
         } catch (SQLException e) {
@@ -43,7 +44,7 @@ public class DataStore {
     }
 
     public static User findUserByEmail(String email) {
-        String sql = "SELECT id, full_name, email, password_hash, join_date FROM users WHERE email = ?";
+        String sql = "SELECT id, full_name, email, password_hash, join_date, role FROM users WHERE email = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
@@ -55,6 +56,7 @@ public class DataStore {
                     u.setEmail(rs.getString("email"));
                     u.setPasswordHash(rs.getString("password_hash"));
                     u.setJoinDate(rs.getString("join_date"));
+                    u.setRole(rs.getString("role"));
                     return u;
                 }
             }
@@ -65,7 +67,7 @@ public class DataStore {
     }
 
     public static void addUser(User u) {
-        String sql = "INSERT INTO users (id, full_name, email, password_hash, join_date) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (id, full_name, email, password_hash, join_date, role) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, u.getId());
@@ -73,16 +75,42 @@ public class DataStore {
             pstmt.setString(3, u.getEmail());
             pstmt.setString(4, u.getPasswordHash());
             pstmt.setDate(5, java.sql.Date.valueOf(u.getJoinDate()));
+            pstmt.setString(6, u.getRole() == null ? "USER" : u.getRole());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error adding user: " + e.getMessage());
         }
     }
 
+    public static boolean updateUserRole(String userId, String role) {
+        String sql = "UPDATE users SET role = ? WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, role);
+            pstmt.setString(2, userId);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error updating user role: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean deleteUser(String userId) {
+        String sql = "DELETE FROM users WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userId);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error deleting user: " + e.getMessage());
+            return false;
+        }
+    }
+
     // ---- Products ----
     public static List<Product> loadProducts() {
         List<Product> products = new ArrayList<>();
-        String sql = "SELECT id, name, category, price, description, image_url, stock FROM products";
+        String sql = "SELECT id, name, category, price, description, image_url, image_data, stock FROM products";
         try (Connection conn = DatabaseConfig.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -94,8 +122,9 @@ public class DataStore {
                 p.setPrice(rs.getDouble("price"));
                 p.setDescription(rs.getString("description"));
                 p.setImageUrl(rs.getString("image_url"));
+                p.setImageData(rs.getBytes("image_data"));
                 p.setStock(rs.getInt("stock"));
-                
+
                 // Load specs
                 p.setSpecs(loadProductSpecs(rs.getString("id")));
                 products.add(p);
@@ -124,7 +153,7 @@ public class DataStore {
     }
 
     public static Product findProductById(String id) {
-        String sql = "SELECT id, name, category, price, description, image_url, stock FROM products WHERE id = ?";
+        String sql = "SELECT id, name, category, price, description, image_url, image_data, stock FROM products WHERE id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, id);
@@ -137,6 +166,7 @@ public class DataStore {
                     p.setPrice(rs.getDouble("price"));
                     p.setDescription(rs.getString("description"));
                     p.setImageUrl(rs.getString("image_url"));
+                    p.setImageData(rs.getBytes("image_data"));
                     p.setStock(rs.getInt("stock"));
                     p.setSpecs(loadProductSpecs(id));
                     return p;
@@ -146,6 +176,156 @@ public class DataStore {
             System.err.println("Error finding product: " + e.getMessage());
         }
         return null;
+    }
+
+    public static boolean addProduct(Product p) {
+        Connection conn = null;
+        try {
+            conn = DatabaseConfig.getConnection();
+            conn.setAutoCommit(false);
+
+            String prodSql = "INSERT INTO products (id, name, category, price, description, image_url, image_data, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement pstmt = conn.prepareStatement(prodSql)) {
+                pstmt.setString(1, p.getId());
+                pstmt.setString(2, p.getName());
+                pstmt.setString(3, p.getCategory());
+                pstmt.setDouble(4, p.getPrice());
+                pstmt.setString(5, p.getDescription());
+                pstmt.setString(6, p.getImageUrl());
+                pstmt.setBytes(7, p.getImageData());
+                pstmt.setInt(8, p.getStock());
+                pstmt.executeUpdate();
+            }
+
+            if (p.getSpecs() != null && !p.getSpecs().isEmpty()) {
+                String specSql = "INSERT INTO product_specs (product_id, spec_key, spec_value) VALUES (?, ?, ?)";
+                try (PreparedStatement pstmt = conn.prepareStatement(specSql)) {
+                    for (Map.Entry<String, String> e : p.getSpecs().entrySet()) {
+                        pstmt.setString(1, p.getId());
+                        pstmt.setString(2, e.getKey());
+                        pstmt.setString(3, e.getValue());
+                        pstmt.addBatch();
+                    }
+                    pstmt.executeBatch();
+                }
+            }
+
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Error adding product: " + e.getMessage());
+            try { if (conn != null) conn.rollback(); } catch (SQLException ex) { /* ignore */ }
+            return false;
+        } finally {
+            try { if (conn != null) { conn.setAutoCommit(true); conn.close(); } } catch (SQLException ex) { /* ignore */ }
+        }
+    }
+
+    public static boolean updateProduct(Product p) {
+        Connection conn = null;
+        try {
+            conn = DatabaseConfig.getConnection();
+            conn.setAutoCommit(false);
+
+            // Only overwrite image_data when caller supplied new bytes — else keep what's there.
+            boolean writeImage = p.getImageData() != null;
+            String prodSql = writeImage
+                    ? "UPDATE products SET name = ?, category = ?, price = ?, description = ?, image_url = ?, image_data = ?, stock = ? WHERE id = ?"
+                    : "UPDATE products SET name = ?, category = ?, price = ?, description = ?, image_url = ?, stock = ? WHERE id = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(prodSql)) {
+                int i = 1;
+                pstmt.setString(i++, p.getName());
+                pstmt.setString(i++, p.getCategory());
+                pstmt.setDouble(i++, p.getPrice());
+                pstmt.setString(i++, p.getDescription());
+                pstmt.setString(i++, p.getImageUrl());
+                if (writeImage) pstmt.setBytes(i++, p.getImageData());
+                pstmt.setInt(i++, p.getStock());
+                pstmt.setString(i, p.getId());
+                pstmt.executeUpdate();
+            }
+
+            try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM product_specs WHERE product_id = ?")) {
+                pstmt.setString(1, p.getId());
+                pstmt.executeUpdate();
+            }
+
+            if (p.getSpecs() != null && !p.getSpecs().isEmpty()) {
+                String specSql = "INSERT INTO product_specs (product_id, spec_key, spec_value) VALUES (?, ?, ?)";
+                try (PreparedStatement pstmt = conn.prepareStatement(specSql)) {
+                    for (Map.Entry<String, String> e : p.getSpecs().entrySet()) {
+                        pstmt.setString(1, p.getId());
+                        pstmt.setString(2, e.getKey());
+                        pstmt.setString(3, e.getValue());
+                        pstmt.addBatch();
+                    }
+                    pstmt.executeBatch();
+                }
+            }
+
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Error updating product: " + e.getMessage());
+            try { if (conn != null) conn.rollback(); } catch (SQLException ex) { /* ignore */ }
+            return false;
+        } finally {
+            try { if (conn != null) { conn.setAutoCommit(true); conn.close(); } } catch (SQLException ex) { /* ignore */ }
+        }
+    }
+
+    public static boolean clearProductImage(String productId) {
+        String sql = "UPDATE products SET image_data = NULL WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, productId);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error clearing product image: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean deleteProduct(String id) {
+        // FK CASCADE on product_specs and order_items removes dependents automatically.
+        String sql = "DELETE FROM products WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, id);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error deleting product: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // ---- Admin stats ----
+    public static record AdminStats(double totalRevenue, int orderCount,
+                                    int userCount, int productCount, int lowStockCount) {}
+
+    public static AdminStats loadAdminStats() {
+        double revenue = 0; int orders = 0, users = 0, products = 0, lowStock = 0;
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement()) {
+            try (ResultSet rs = stmt.executeQuery("SELECT COALESCE(SUM(total), 0) FROM orders")) {
+                if (rs.next()) revenue = rs.getDouble(1);
+            }
+            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM orders")) {
+                if (rs.next()) orders = rs.getInt(1);
+            }
+            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users")) {
+                if (rs.next()) users = rs.getInt(1);
+            }
+            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM products")) {
+                if (rs.next()) products = rs.getInt(1);
+            }
+            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM products WHERE stock < 20")) {
+                if (rs.next()) lowStock = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error loading admin stats: " + e.getMessage());
+        }
+        return new AdminStats(revenue, orders, users, products, lowStock);
     }
 
     // ---- Orders ----
@@ -196,6 +376,41 @@ public class DataStore {
             System.err.println("Error loading order items: " + e.getMessage());
         }
         return items;
+    }
+
+    public static List<Order> loadAllOrders() {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT id, user_id, total, order_date, status FROM orders ORDER BY order_date DESC";
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                Order o = new Order();
+                o.setId(rs.getString("id"));
+                o.setUserId(rs.getString("user_id"));
+                o.setTotal(rs.getDouble("total"));
+                o.setDate(rs.getString("order_date"));
+                o.setStatus(rs.getString("status"));
+                o.setItems(loadOrderItems(rs.getString("id")));
+                orders.add(o);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error loading all orders: " + e.getMessage());
+        }
+        return orders;
+    }
+
+    public static boolean updateOrderStatus(String orderId, String status) {
+        String sql = "UPDATE orders SET status = ? WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, status);
+            pstmt.setString(2, orderId);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error updating order status: " + e.getMessage());
+            return false;
+        }
     }
 
     public static void addOrder(Order o) {

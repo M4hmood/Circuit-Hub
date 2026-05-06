@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.tekup.circuithub.controllers.AdminProductEditController"
+            styleClass="welcome-root"
+            prefWidth="1280" prefHeight="800">
+
+    <left>
+        <VBox styleClass="sidebar" prefWidth="200" spacing="4">
+            <Label text="◢ CircuitHub" styleClass="sidebar-brand"/>
+            <Label text="// ADMIN CONSOLE" styleClass="page-sub"/>
+            <Button text="◆  Dashboard" styleClass="nav-btn"        onAction="#navAdminDashboard"/>
+            <Button text="▤  Products"  styleClass="nav-btn,active" onAction="#navAdminProducts"/>
+            <Button text="≡  Orders"    styleClass="nav-btn"        onAction="#navAdminOrders"/>
+            <Button text="◉  Users"     styleClass="nav-btn"        onAction="#navAdminUsers"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="⏻  Logout"    styleClass="nav-btn"        onAction="#onLogout"/>
+        </VBox>
+    </left>
+
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="content-area"
+                    style="-fx-background: #0F172A; -fx-background-color: #0F172A;">
+            <VBox spacing="22">
+                <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
+
+                <VBox spacing="4">
+                    <Label fx:id="titleLabel" text="New Product" styleClass="page-title"/>
+                    <Label text="// edit catalog entry" styleClass="page-sub"/>
+                </VBox>
+
+                <VBox styleClass="panel" spacing="14">
+                    <padding><Insets top="22" right="22" bottom="22" left="22"/></padding>
+
+                    <GridPane hgap="14" vgap="12">
+                        <columnConstraints>
+                            <ColumnConstraints minWidth="120" prefWidth="120"/>
+                            <ColumnConstraints hgrow="ALWAYS"/>
+                        </columnConstraints>
+
+                        <Label text="ID"        styleClass="text-muted" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <TextField fx:id="idField"      styleClass="terminal-field" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                        <Label text="Name"      styleClass="text-muted" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <TextField fx:id="nameField"    styleClass="terminal-field" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                        <Label text="Category"  styleClass="text-muted" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <ComboBox fx:id="categoryCombo" styleClass="combo,combo-box" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                        <Label text="Price ($)" styleClass="text-muted" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                        <TextField fx:id="priceField"   styleClass="terminal-field" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                        <Label text="Stock"     styleClass="text-muted" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                        <TextField fx:id="stockField"   styleClass="terminal-field" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                        <Label text="Image" styleClass="text-muted" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                        <HBox spacing="14" alignment="CENTER_LEFT" GridPane.rowIndex="5" GridPane.columnIndex="1">
+                            <ImageView fx:id="imagePreview" fitWidth="120" fitHeight="90" preserveRatio="true" smooth="true"/>
+                            <VBox spacing="6">
+                                <Button text="Choose image..." styleClass="btn-secondary" onAction="#onChooseImage"/>
+                                <Button fx:id="clearImageBtn" text="Remove image" styleClass="btn-ghost" onAction="#onClearImage"/>
+                                <Label fx:id="imageHint" text="// PNG / JPG / GIF — stored in DB" styleClass="text-muted"/>
+                            </VBox>
+                        </HBox>
+
+                        <Label text="Image URL" styleClass="text-muted" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                        <TextField fx:id="imageField"   styleClass="terminal-field" promptText="Optional fallback URL" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+                        <Label text="Description" styleClass="text-muted" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+                        <TextArea fx:id="descArea"  styleClass="terminal-field" prefRowCount="4" wrapText="true" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+                    </GridPane>
+
+                    <Label text="Specs" styleClass="page-sub"/>
+                    <VBox fx:id="specsBox" spacing="8"/>
+                    <HBox>
+                        <Button text="+ Add spec" styleClass="btn-ghost" onAction="#onAddSpec"/>
+                    </HBox>
+
+                    <Label fx:id="errorLabel" text=" " styleClass="text-accent"/>
+
+                    <HBox spacing="10">
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="Cancel" styleClass="btn-secondary" onAction="#onCancel"/>
+                        <Button text="Save"   styleClass="btn-primary"   onAction="#onSave"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>
