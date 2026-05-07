@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -29,6 +30,10 @@ public class AdminUsersController {
     @FXML private TableColumn<User, Void> colRole;
     @FXML private TableColumn<User, Void> colActions;
     @FXML private TextField searchField;
+    @FXML private ComboBox<String> roleCombo;
+    @FXML private Label kpiTotal;
+    @FXML private Label kpiAdmins;
+    @FXML private Label kpiUsers;
 
     private final ObservableList<User> all = FXCollections.observableArrayList();
     private FilteredList<User> filtered;
@@ -103,26 +108,47 @@ public class AdminUsersController {
             }
         });
 
+        if (roleCombo != null) {
+            roleCombo.setItems(FXCollections.observableArrayList("All", "ADMIN", "USER"));
+            roleCombo.setValue("All");
+            roleCombo.valueProperty().addListener((o, a, b) -> applyFilter());
+        }
+
         refresh();
 
-        searchField.textProperty().addListener((obs, o, n) -> applyFilter(n));
+        searchField.textProperty().addListener((obs, o, n) -> applyFilter());
     }
 
     private void refresh() {
         all.setAll(DataStore.loadUsers());
         filtered = new FilteredList<>(all, u -> true);
         usersTable.setItems(filtered);
-        applyFilter(searchField == null ? "" : searchField.getText());
+        updateKpis();
+        applyFilter();
     }
 
-    private void applyFilter(String q) {
+    private void updateKpis() {
+        int total = all.size(), admins = 0;
+        for (User u : all) if (u.isAdmin()) admins++;
+        if (kpiTotal != null) kpiTotal.setText(String.valueOf(total));
+        if (kpiAdmins != null) kpiAdmins.setText(String.valueOf(admins));
+        if (kpiUsers != null) kpiUsers.setText(String.valueOf(total - admins));
+    }
+
+    private void applyFilter() {
         if (filtered == null) return;
-        if (q == null || q.isBlank()) { filtered.setPredicate(u -> true); return; }
-        String needle = q.toLowerCase();
-        filtered.setPredicate(u ->
-                (u.getFullName() != null && u.getFullName().toLowerCase().contains(needle))
-             || (u.getEmail()    != null && u.getEmail().toLowerCase().contains(needle))
-             || (u.getId()       != null && u.getId().toLowerCase().contains(needle)));
+        String q = searchField == null || searchField.getText() == null ? "" : searchField.getText().trim().toLowerCase();
+        String role = roleCombo == null ? "All" : roleCombo.getValue();
+        filtered.setPredicate(u -> {
+            if (role != null && !"All".equals(role)) {
+                boolean wantAdmin = "ADMIN".equalsIgnoreCase(role);
+                if (u.isAdmin() != wantAdmin) return false;
+            }
+            if (q.isEmpty()) return true;
+            return (u.getFullName() != null && u.getFullName().toLowerCase().contains(q))
+                || (u.getEmail()    != null && u.getEmail().toLowerCase().contains(q))
+                || (u.getId()       != null && u.getId().toLowerCase().contains(q));
+        });
     }
 
     @FXML private void navAdminDashboard(ActionEvent e) { SceneManager.getInstance().switchTo("admin-dashboard", true); }

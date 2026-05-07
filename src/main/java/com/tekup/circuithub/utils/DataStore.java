@@ -16,6 +16,11 @@ public class DataStore {
     private static final List<CartItem> cart = new ArrayList<>();
     private static Product selectedProduct;
 
+    // Product cache — invalidated whenever admin adds/updates/deletes a product.
+    private static List<Product> productCache = null;
+
+    public static void invalidateProductCache() { productCache = null; }
+
     public static void init() {
         DatabaseConfig.initializeDatabase();
     }
@@ -109,68 +114,88 @@ public class DataStore {
 
     // ---- Products ----
     public static List<Product> loadProducts() {
-        List<Product> products = new ArrayList<>();
-        String sql = "SELECT id, name, category, price, description, image_url, image_data, stock FROM products";
+        if (productCache != null) return productCache;
+
+        // Single query: products LEFT JOIN specs — avoids N+1 round-trips.
+        String sql = """
+                SELECT p.id, p.name, p.category, p.price, p.description,
+                       p.image_url, p.image_data, p.stock,
+                       s.spec_key, s.spec_value
+                FROM products p
+                LEFT JOIN product_specs s ON s.product_id = p.id
+                ORDER BY p.id, s.id
+                """;
+        Map<String, Product> byId = new LinkedHashMap<>();
         try (Connection conn = DatabaseConfig.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                Product p = new Product();
-                p.setId(rs.getString("id"));
-                p.setName(rs.getString("name"));
-                p.setCategory(rs.getString("category"));
-                p.setPrice(rs.getDouble("price"));
-                p.setDescription(rs.getString("description"));
-                p.setImageUrl(rs.getString("image_url"));
-                p.setImageData(rs.getBytes("image_data"));
-                p.setStock(rs.getInt("stock"));
-
-                // Load specs
-                p.setSpecs(loadProductSpecs(rs.getString("id")));
-                products.add(p);
+                String id = rs.getString("id");
+                Product p = byId.computeIfAbsent(id, k -> {
+                    try {
+                        Product np = new Product();
+                        np.setId(id);
+                        np.setName(rs.getString("name"));
+                        np.setCategory(rs.getString("category"));
+                        np.setPrice(rs.getDouble("price"));
+                        np.setDescription(rs.getString("description"));
+                        np.setImageUrl(rs.getString("image_url"));
+                        np.setImageData(rs.getBytes("image_data"));
+                        np.setStock(rs.getInt("stock"));
+                        np.setSpecs(new LinkedHashMap<>());
+                        return np;
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                String key = rs.getString("spec_key");
+                if (key != null) p.getSpecs().put(key, rs.getString("spec_value"));
             }
-        } catch (SQLException e) {
+        } catch (SQLException | RuntimeException e) {
             System.err.println("Error loading products: " + e.getMessage());
         }
-        return products;
-    }
-
-    private static Map<String, String> loadProductSpecs(String productId) {
-        Map<String, String> specs = new LinkedHashMap<>();
-        String sql = "SELECT spec_key, spec_value FROM product_specs WHERE product_id = ? ORDER BY id";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, productId);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    specs.put(rs.getString("spec_key"), rs.getString("spec_value"));
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Error loading specs: " + e.getMessage());
-        }
-        return specs;
+        productCache = new ArrayList<>(byId.values());
+        return productCache;
     }
 
     public static Product findProductById(String id) {
-        String sql = "SELECT id, name, category, price, description, image_url, image_data, stock FROM products WHERE id = ?";
+        // Check cache first.
+        if (productCache != null) {
+            for (Product p : productCache) {
+                if (p.getId().equals(id)) return p;
+            }
+        }
+        String sql = """
+                SELECT p.id, p.name, p.category, p.price, p.description,
+                       p.image_url, p.image_data, p.stock,
+                       s.spec_key, s.spec_value
+                FROM products p
+                LEFT JOIN product_specs s ON s.product_id = p.id
+                WHERE p.id = ?
+                ORDER BY s.id
+                """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    Product p = new Product();
-                    p.setId(rs.getString("id"));
-                    p.setName(rs.getString("name"));
-                    p.setCategory(rs.getString("category"));
-                    p.setPrice(rs.getDouble("price"));
-                    p.setDescription(rs.getString("description"));
-                    p.setImageUrl(rs.getString("image_url"));
-                    p.setImageData(rs.getBytes("image_data"));
-                    p.setStock(rs.getInt("stock"));
-                    p.setSpecs(loadProductSpecs(id));
-                    return p;
+                Product p = null;
+                while (rs.next()) {
+                    if (p == null) {
+                        p = new Product();
+                        p.setId(rs.getString("id"));
+                        p.setName(rs.getString("name"));
+                        p.setCategory(rs.getString("category"));
+                        p.setPrice(rs.getDouble("price"));
+                        p.setDescription(rs.getString("description"));
+                        p.setImageUrl(rs.getString("image_url"));
+                        p.setImageData(rs.getBytes("image_data"));
+                        p.setStock(rs.getInt("stock"));
+                        p.setSpecs(new LinkedHashMap<>());
+                    }
+                    String key = rs.getString("spec_key");
+                    if (key != null) p.getSpecs().put(key, rs.getString("spec_value"));
                 }
+                return p;
             }
         } catch (SQLException e) {
             System.err.println("Error finding product: " + e.getMessage());
@@ -211,6 +236,7 @@ public class DataStore {
             }
 
             conn.commit();
+            invalidateProductCache();
             return true;
         } catch (SQLException e) {
             System.err.println("Error adding product: " + e.getMessage());
@@ -264,6 +290,7 @@ public class DataStore {
             }
 
             conn.commit();
+            invalidateProductCache();
             return true;
         } catch (SQLException e) {
             System.err.println("Error updating product: " + e.getMessage());
@@ -279,7 +306,9 @@ public class DataStore {
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, productId);
-            return pstmt.executeUpdate() > 0;
+            boolean ok = pstmt.executeUpdate() > 0;
+            if (ok) invalidateProductCache();
+            return ok;
         } catch (SQLException e) {
             System.err.println("Error clearing product image: " + e.getMessage());
             return false;
@@ -287,12 +316,13 @@ public class DataStore {
     }
 
     public static boolean deleteProduct(String id) {
-        // FK CASCADE on product_specs and order_items removes dependents automatically.
         String sql = "DELETE FROM products WHERE id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, id);
-            return pstmt.executeUpdate() > 0;
+            boolean ok = pstmt.executeUpdate() > 0;
+            if (ok) invalidateProductCache();
+            return ok;
         } catch (SQLException e) {
             System.err.println("Error deleting product: " + e.getMessage());
             return false;

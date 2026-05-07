@@ -34,7 +34,7 @@
                 <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
 
                 <VBox spacing="4">
-                    <Label text="\$ cart" styleClass="page-title"/>
+                    <Label text="cart" styleClass="page-title"/>
                     <Label fx:id="itemCountLabel" text="// 0 items" styleClass="page-sub"/>
                 </VBox>
 
@@ -47,15 +47,15 @@
                 <HBox fx:id="totalsBar" styleClass="totals-bar" spacing="28" alignment="CENTER_LEFT">
                     <VBox spacing="2">
                         <Label text="subtotal" styleClass="total-key"/>
-                        <Label fx:id="subtotalLabel" text="\$0.00" styleClass="total-mid"/>
+                        <Label fx:id="subtotalLabel" text="0.00 TND" styleClass="total-mid"/>
                     </VBox>
                     <VBox spacing="2">
                         <Label text="tax (10%)" styleClass="total-key"/>
-                        <Label fx:id="taxLabel" text="\$0.00" styleClass="total-mid"/>
+                        <Label fx:id="taxLabel" text="0.00 TND" styleClass="total-mid"/>
                     </VBox>
                     <VBox spacing="2">
                         <Label text="total" styleClass="total-key"/>
-                        <Label fx:id="totalLabel" text="\$0.00" styleClass="total-big"/>
+                        <Label fx:id="totalLabel" text="0.00 TND" styleClass="total-big"/>
                     </VBox>
                     <Region HBox.hgrow="ALWAYS"/>
                     <Button fx:id="checkoutBtn" text="▶ PROCEED TO CHECKOUT"

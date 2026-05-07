@@ -36,30 +36,47 @@
         <VBox styleClass="content-area" spacing="18">
             <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
 
-             <VBox spacing="4">
-                 <Label text="Products" styleClass="page-title"/>
-                 <Label fx:id="resultCount" text="// 0 components" styleClass="page-sub"/>
-             </VBox>
+            <!-- Title row -->
+            <FlowPane hgap="14" vgap="10" alignment="CENTER_LEFT">
+                <VBox spacing="4" minWidth="220">
+                    <Label text="Components" styleClass="page-title"/>
+                    <Label fx:id="resultCount" text="// 0 components" styleClass="page-sub"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <HBox spacing="6" alignment="CENTER_RIGHT" styleClass="view-toggle">
+                    <Button fx:id="gridBtn" text="▦ grid"
+                            styleClass="view-toggle-btn,active"
+                            onAction="#onGridView"/>
+                    <Button fx:id="listBtn" text="≣ list"
+                            styleClass="view-toggle-btn"
+                            onAction="#onListView"/>
+                </HBox>
+            </FlowPane>
 
-            <!-- Filter bar -->
-            <HBox styleClass="filter-bar" spacing="22" alignment="CENTER_LEFT">
-                <VBox spacing="4">
+            <!-- Filter bar (wraps on narrow widths) -->
+            <FlowPane styleClass="filter-bar" hgap="22" vgap="14" alignment="CENTER_LEFT">
+                <VBox spacing="4" minWidth="200">
                     <Label text="category" styleClass="filter-label"/>
-                    <ComboBox fx:id="categoryCombo" styleClass="combo" prefWidth="180"/>
+                    <ComboBox fx:id="categoryCombo" styleClass="combo" prefWidth="200"/>
                 </VBox>
 
-                <VBox spacing="4">
+                <VBox spacing="4" minWidth="280">
                     <Label text="max price" styleClass="filter-label"/>
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <Slider fx:id="priceSlider" styleClass="price-slider"
-                                min="0" max="200" value="200" prefWidth="220"/>
-                        <Label fx:id="priceLabel" text="200" styleClass="mono,text-accent"/>
+                                min="0" max="200" value="200" prefWidth="240"/>
+                        <Label fx:id="priceLabel" text="200 TND" styleClass="mono,text-accent" minWidth="80"/>
                     </HBox>
                 </VBox>
 
-                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                    <Label text="SEARCH" styleClass="filter-label"/>
-                    <TextField fx:id="searchField" promptText="Search by name or specs…"
+                <VBox spacing="4" minWidth="180">
+                    <Label text="sort by" styleClass="filter-label"/>
+                    <ComboBox fx:id="sortCombo" styleClass="combo" prefWidth="200"/>
+                </VBox>
+
+                <VBox spacing="4" minWidth="240" HBox.hgrow="ALWAYS">
+                    <Label text="search" styleClass="filter-label"/>
+                    <TextField fx:id="searchField" promptText="Name, category, or specs…"
                                styleClass="search-field"/>
                 </VBox>
 
@@ -67,14 +84,25 @@
                     <Label text=" " styleClass="filter-label"/>
                     <Button text="✕ clear" styleClass="btn-secondary" onAction="#onClearFilters"/>
                 </VBox>
-            </HBox>
+            </FlowPane>
+
+            <!-- Active filter chips -->
+            <FlowPane fx:id="activeChipsPane" hgap="8" vgap="8"/>
 
             <!-- Results -->
             <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        styleClass="invisible-scroll"
                         style="-fx-background: #0F172A; -fx-background-color: #0F172A;">
                 <FlowPane fx:id="productsPane" hgap="18" vgap="18"
                           style="-fx-background-color: #0F172A; -fx-padding: 8;"/>
             </ScrollPane>
+
+            <!-- Pagination bar -->
+            <HBox fx:id="paginationBar" spacing="8" alignment="CENTER" style="-fx-padding: 8 0 0 0;">
+                <Button fx:id="prevBtn" text="← Prev" styleClass="btn-secondary" onAction="#onPrevPage"/>
+                <Label fx:id="pageLabel" text="Page 1 of 1" styleClass="page-sub" minWidth="100" style="-fx-alignment: center;"/>
+                <Button fx:id="nextBtn" text="Next →" styleClass="btn-secondary" onAction="#onNextPage"/>
+            </HBox>
         </VBox>
     </center>
 </BorderPane>

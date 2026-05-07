@@ -43,7 +43,7 @@
                 <HBox spacing="14">
                     <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6">
                         <Label text="REVENUE" styleClass="stat-key"/>
-                        <Label fx:id="revenueValue" text="\$0.00" styleClass="stat-value"/>
+                        <Label fx:id="revenueValue" text="0.00 TND" styleClass="stat-value"/>
                     </VBox>
                     <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6">
                         <Label text="ORDERS" styleClass="stat-key"/>

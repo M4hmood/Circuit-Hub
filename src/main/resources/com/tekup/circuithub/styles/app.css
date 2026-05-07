@@ -761,18 +761,33 @@
 
 /* ===== ScrollBar ===== */
 .scroll-bar:vertical, .scroll-bar:horizontal {
-    -fx-background-color: transparent;
+    -fx-background-color: rgba(13, 21, 37, 0.6);
     -fx-padding: 2;
+    -fx-background-radius: 6;
 }
+.scroll-bar:vertical { -fx-pref-width: 12; }
+.scroll-bar:horizontal { -fx-pref-height: 12; }
 .scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb {
-    -fx-background-color: #1E2D46;
-    -fx-background-radius: 4;
+    -fx-background-color: #3B4D70;
+    -fx-background-radius: 6;
+    -fx-background-insets: 1;
 }
 .scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover {
-    -fx-background-color: #2A3A58;
+    -fx-background-color: #5B7099;
 }
-.scroll-bar:vertical .track, .scroll-bar:horizontal .track { -fx-background-color: transparent; }
-.scroll-bar .increment-button, .scroll-bar .decrement-button { -fx-background-color: transparent; -fx-padding: 0; }
+.scroll-bar:vertical .thumb:pressed, .scroll-bar:horizontal .thumb:pressed {
+    -fx-background-color: #67E8F9;
+}
+.scroll-bar:vertical .track, .scroll-bar:horizontal .track {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6;
+}
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+}
 .scroll-bar .increment-arrow, .scroll-bar .decrement-arrow { -fx-shape: " "; -fx-padding: 0; }
 
 /* ===== Hyperlinks ===== */
@@ -834,3 +849,143 @@
 .badge-admin     { -fx-background-color: rgba(167,139,250,0.10); -fx-text-fill: #A78BFA; -fx-border-color: rgba(167,139,250,0.25); -fx-border-width: 1; -fx-border-radius: 999; -fx-background-radius: 999; -fx-padding: 4 10 4 10; -fx-font-size: 10px; -fx-font-weight: bold; }
 .badge-user      { -fx-background-color: rgba(100,116,139,0.10); -fx-text-fill: #94A3B8; -fx-border-color: rgba(100,116,139,0.25); -fx-border-width: 1; -fx-border-radius: 999; -fx-background-radius: 999; -fx-padding: 4 10 4 10; -fx-font-size: 10px; -fx-font-weight: bold; }
 .badge-cancelled { -fx-background-color: rgba(248,113,113,0.10); -fx-text-fill: #F87171; -fx-border-color: rgba(248,113,113,0.25); -fx-border-width: 1; -fx-border-radius: 999; -fx-background-radius: 999; -fx-padding: 4 10 4 10; -fx-font-size: 10px; -fx-font-weight: bold; }
+
+/* ===== Admin: KPI tiles ===== */
+.kpi-tile {
+    -fx-background-color: linear-gradient(to bottom, #131C2E, #0D1525);
+    -fx-background-radius: 12;
+    -fx-border-color: #1E2D46;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 14 18 14 18;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.30), 8, 0, 0, 2);
+}
+.kpi-key {
+    -fx-font-family: ''JetBrains Mono'', ''Consolas'', monospace;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748B;
+}
+.kpi-value {
+    -fx-font-family: ''Inter'', ''Segoe UI'', sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #F1F5F9;
+}
+.kpi-good   { -fx-text-fill: #34D399; }
+.kpi-warn   { -fx-text-fill: #F59E0B; }
+.kpi-bad    { -fx-text-fill: #F87171; }
+.kpi-info   { -fx-text-fill: #60A5FA; }
+.kpi-accent { -fx-text-fill: #67E8F9; }
+
+/* ===== Admin: stock cell colors ===== */
+.stock-cell-good { -fx-text-fill: #34D399 !important; -fx-font-weight: bold; }
+.stock-cell-low  { -fx-text-fill: #F59E0B !important; -fx-font-weight: bold; }
+.stock-cell-bad  { -fx-text-fill: #F87171 !important; -fx-font-weight: bold; }
+
+/* ===== Products page: stock chips ===== */
+.stock-chip-in {
+    -fx-background-color: rgba(52, 211, 153, 0.10);
+    -fx-text-fill: #34D399;
+    -fx-border-color: rgba(52, 211, 153, 0.25);
+    -fx-border-width: 1;
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 3 8 3 8;
+    -fx-font-family: ''JetBrains Mono'', ''Consolas'', monospace;
+    -fx-font-size: 9.5px;
+    -fx-font-weight: bold;
+}
+.stock-chip-low {
+    -fx-background-color: rgba(245, 158, 11, 0.10);
+    -fx-text-fill: #F59E0B;
+    -fx-border-color: rgba(245, 158, 11, 0.25);
+    -fx-border-width: 1;
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 3 8 3 8;
+    -fx-font-family: ''JetBrains Mono'', ''Consolas'', monospace;
+    -fx-font-size: 9.5px;
+    -fx-font-weight: bold;
+}
+.stock-chip-out {
+    -fx-background-color: rgba(248, 113, 113, 0.10);
+    -fx-text-fill: #F87171;
+    -fx-border-color: rgba(248, 113, 113, 0.25);
+    -fx-border-width: 1;
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 3 8 3 8;
+    -fx-font-family: ''JetBrains Mono'', ''Consolas'', monospace;
+    -fx-font-size: 9.5px;
+    -fx-font-weight: bold;
+}
+
+/* ===== Products page: view toggle ===== */
+.view-toggle {
+    -fx-background-color: #0D1525;
+    -fx-background-radius: 8;
+    -fx-border-color: #1E2D46;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-padding: 4;
+}
+.view-toggle-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748B;
+    -fx-font-family: ''JetBrains Mono'', ''Consolas'', monospace;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 6 12 6 12;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+.view-toggle-btn:hover { -fx-text-fill: #CBD5E1; }
+.view-toggle-btn.active {
+    -fx-background-color: rgba(6, 182, 212, 0.12);
+    -fx-text-fill: #67E8F9;
+}
+
+/* ===== Products page: filter chips ===== */
+.filter-chip {
+    -fx-background-color: rgba(6, 182, 212, 0.08);
+    -fx-border-color: rgba(6, 182, 212, 0.25);
+    -fx-border-width: 1;
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 4 4 4 12;
+    -fx-alignment: center-left;
+}
+.filter-chip .label {
+    -fx-text-fill: #67E8F9;
+    -fx-font-family: ''JetBrains Mono'', ''Consolas'', monospace;
+    -fx-font-size: 11px;
+}
+.filter-chip-x {
+    -fx-background-color: transparent;
+    -fx-text-fill: #67E8F9;
+    -fx-font-size: 10px;
+    -fx-padding: 0 6 0 6;
+    -fx-background-radius: 999;
+    -fx-cursor: hand;
+}
+.filter-chip-x:hover {
+    -fx-background-color: rgba(248, 113, 113, 0.15);
+    -fx-text-fill: #F87171;
+}
+
+/* ===== Products page: list-view row ===== */
+.product-row {
+    -fx-background-color: linear-gradient(to right, #131C2E, #0F172A);
+    -fx-background-radius: 12;
+    -fx-border-color: #1E2D46;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-cursor: hand;
+    -fx-padding: 14 18 14 14;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 6, 0, 0, 2);
+}
+.product-row:hover {
+    -fx-border-color: #0891B2;
+    -fx-effect: dropshadow(gaussian, rgba(6,182,212,0.20), 12, 0, 0, 3);
+}

@@ -44,6 +44,7 @@ public class SceneManager {
                 scene = new Scene(root);
                 scene.getStylesheets().add(
                         getClass().getResource("/com/tekup/circuithub/styles/app.css").toExternalForm());
+                scene.setFill(javafx.scene.paint.Color.web("#0F172A"));
                 stage.setScene(scene);
             } else {
                 scene.setRoot(root);
@@ -51,18 +52,12 @@ public class SceneManager {
 
             if (withFade) {
                 root.setOpacity(0);
-                root.setTranslateY(10);
 
-                FadeTransition ft = new FadeTransition(Duration.millis(320), root);
+                FadeTransition ft = new FadeTransition(Duration.millis(180), root);
                 ft.setFromValue(0.0);
                 ft.setToValue(1.0);
-
-                TranslateTransition tt = new TranslateTransition(Duration.millis(320), root);
-                tt.setFromY(10);
-                tt.setToY(0);
-                tt.setInterpolator(Interpolator.EASE_OUT);
-
-                new ParallelTransition(ft, tt).play();
+                ft.setInterpolator(Interpolator.EASE_IN);
+                ft.play();
             }
         } catch (IOException e) {
             e.printStackTrace();

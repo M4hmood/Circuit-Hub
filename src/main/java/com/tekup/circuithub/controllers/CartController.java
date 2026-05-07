@@ -5,6 +5,7 @@ import com.tekup.circuithub.models.Order;
 import com.tekup.circuithub.models.User;
 import com.tekup.circuithub.utils.DataStore;
 import com.tekup.circuithub.utils.ImageLoader;
+import com.tekup.circuithub.utils.Money;
 import com.tekup.circuithub.utils.SceneManager;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -70,9 +71,9 @@ public class CartController {
         double subtotal = DataStore.cartSubtotal();
         double tax = subtotal * TAX_RATE;
         double total = subtotal + tax;
-        subtotalLabel.setText(String.format("$%.2f", subtotal));
-        taxLabel.setText(String.format("$%.2f", tax));
-        totalLabel.setText(String.format("$%.2f", total));
+        subtotalLabel.setText(Money.format(subtotal));
+        taxLabel.setText(Money.format(tax));
+        totalLabel.setText(Money.format(total));
     }
 
     private HBox buildRow(CartItem ci) {
@@ -96,7 +97,7 @@ public class CartController {
         VBox info = new VBox(4, cat, name);
         info.setPrefWidth(300);
 
-        Label unit = new Label(String.format("$%.2f each", ci.getProduct().getPrice()));
+        Label unit = new Label(Money.formatEach(ci.getProduct().getPrice()));
         unit.getStyleClass().add("page-sub");
 
         Button minus = new Button("−"); minus.getStyleClass().add("qty-btn");
@@ -104,7 +105,7 @@ public class CartController {
         Button plus = new Button("+"); plus.getStyleClass().add("qty-btn");
         HBox qtyBox = new HBox(8, minus, qty, plus); qtyBox.setAlignment(javafx.geometry.Pos.CENTER);
 
-        Label line = new Label(String.format("$%.2f", ci.getLineTotal()));
+        Label line = new Label(Money.format(ci.getLineTotal()));
         line.getStyleClass().add("price"); line.setStyle("-fx-font-size: 18px;");
         line.setPrefWidth(100);
         line.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
@@ -135,8 +136,8 @@ public class CartController {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirm Order");
         alert.setHeaderText("Place this order?");
-        alert.setContentText(String.format("Total: $%.2f (incl. 10%% tax)%n%nItems: %d",
-                total, DataStore.getCart().stream().mapToInt(CartItem::getQuantity).sum()));
+        alert.setContentText(String.format("Total: %s (incl. 10%% tax)%n%nItems: %d",
+                Money.format(total), DataStore.getCart().stream().mapToInt(CartItem::getQuantity).sum()));
         alert.getDialogPane().getStylesheets().add(
                 getClass().getResource("/com/tekup/circuithub/styles/app.css").toExternalForm());
 

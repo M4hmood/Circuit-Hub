@@ -4,6 +4,7 @@ import com.tekup.circuithub.models.CartItem;
 import com.tekup.circuithub.models.Order;
 import com.tekup.circuithub.models.User;
 import com.tekup.circuithub.utils.DataStore;
+import com.tekup.circuithub.utils.Money;
 import com.tekup.circuithub.utils.SceneManager;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -75,9 +76,9 @@ public class ProfileController {
         statOrders.setText(String.valueOf(total));
         statOrdersSub.setText(pending + " pending · " + shipped + " shipped · " + delivered + " delivered");
 
-        statSpent.setText(String.format("$%.2f", spent));
+        statSpent.setText(Money.format(spent));
         double avg = total == 0 ? 0 : spent / total;
-        statSpentSub.setText(String.format("avg $%.2f / order", avg));
+        statSpentSub.setText("avg " + Money.format(avg) + " / order");
 
         if (catCount.isEmpty()) {
             statFavorite.setText("—");

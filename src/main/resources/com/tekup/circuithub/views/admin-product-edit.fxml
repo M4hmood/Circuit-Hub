@@ -63,7 +63,7 @@
                         <Label text="Category"  styleClass="text-muted" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
                         <ComboBox fx:id="categoryCombo" styleClass="combo,combo-box" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-                        <Label text="Price ($)" styleClass="text-muted" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                        <Label text="Price (TND)" styleClass="text-muted" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
                         <TextField fx:id="priceField"   styleClass="terminal-field" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
                         <Label text="Stock"     styleClass="text-muted" GridPane.rowIndex="4" GridPane.columnIndex="0"/>

@@ -3,6 +3,7 @@ package com.tekup.circuithub.controllers;
 import com.tekup.circuithub.models.Product;
 import com.tekup.circuithub.models.User;
 import com.tekup.circuithub.utils.DataStore;
+import com.tekup.circuithub.utils.Money;
 import com.tekup.circuithub.utils.SceneManager;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
@@ -125,7 +126,7 @@ public class DashboardController {
         Product p = featured.get(i);
         bannerTitle.setText(p.getName());
         bannerDesc.setText(p.getDescription());
-        bannerPrice.setText(String.format("$%.2f", p.getPrice()));
+        bannerPrice.setText(Money.format(p.getPrice()));
         bannerCategory.setText(p.getCategory());
     }
 

@@ -3,6 +3,7 @@ package com.tekup.circuithub.controllers;
 import com.tekup.circuithub.models.Product;
 import com.tekup.circuithub.utils.DataStore;
 import com.tekup.circuithub.utils.ImageLoader;
+import com.tekup.circuithub.utils.Money;
 import com.tekup.circuithub.utils.SceneManager;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
@@ -49,7 +50,7 @@ public class ProductDetailController {
         breadcrumb.setText("// products / " + product.getCategory().toLowerCase() + " / " + product.getName());
         categoryChip.setText(product.getCategory().toUpperCase());
         nameLabel.setText(product.getName());
-        priceLabel.setText(String.format("$%.2f", product.getPrice()));
+        priceLabel.setText(Money.format(product.getPrice()));
         descLabel.setText(product.getDescription());
 
         int s = product.getStock();

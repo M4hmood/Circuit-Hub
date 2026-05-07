@@ -4,6 +4,7 @@ import com.tekup.circuithub.models.CartItem;
 import com.tekup.circuithub.models.Order;
 import com.tekup.circuithub.models.User;
 import com.tekup.circuithub.utils.DataStore;
+import com.tekup.circuithub.utils.Money;
 import com.tekup.circuithub.utils.SceneManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -17,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -35,9 +37,15 @@ public class AdminOrdersController {
     @FXML private TableColumn<Order, Void> colStatus;
     @FXML private TableColumn<Order, Void> colDetails;
     @FXML private ComboBox<String> filterCombo;
+    @FXML private TextField searchField;
     @FXML private VBox detailsPanel;
     @FXML private VBox detailsBox;
     @FXML private Label detailsTitle;
+    @FXML private Label kpiTotal;
+    @FXML private Label kpiPending;
+    @FXML private Label kpiShipped;
+    @FXML private Label kpiDelivered;
+    @FXML private Label kpiRevenue;
 
     private final ObservableList<Order> all = FXCollections.observableArrayList();
     private FilteredList<Order> filtered;
@@ -55,7 +63,7 @@ public class AdminOrdersController {
         colDate.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDate()));
         colItems.setCellValueFactory(c -> new SimpleStringProperty(
                 String.valueOf(c.getValue().getItems() == null ? 0 : c.getValue().getItems().size())));
-        colTotal.setCellValueFactory(c -> new SimpleStringProperty(String.format("$%.2f", c.getValue().getTotal())));
+        colTotal.setCellValueFactory(c -> new SimpleStringProperty(Money.format(c.getValue().getTotal())));
 
         colStatus.setCellFactory(col -> new TableCell<>() {
             private final ComboBox<String> combo = new ComboBox<>(FXCollections.observableArrayList(STATUSES));
@@ -67,6 +75,7 @@ public class AdminOrdersController {
                     if (newStatus != null && !newStatus.equals(o.getStatus())) {
                         if (DataStore.updateOrderStatus(o.getId(), newStatus)) {
                             o.setStatus(newStatus);
+                            updateKpis();
                         }
                     }
                 });
@@ -99,6 +108,7 @@ public class AdminOrdersController {
         filterCombo.setItems(FXCollections.observableArrayList("All", "Pending", "Shipped", "Delivered", "Cancelled"));
         filterCombo.setValue("All");
         filterCombo.setOnAction(e -> applyFilter());
+        if (searchField != null) searchField.textProperty().addListener((o, a, b) -> applyFilter());
 
         refresh();
     }
@@ -107,14 +117,39 @@ public class AdminOrdersController {
         all.setAll(DataStore.loadAllOrders());
         filtered = new FilteredList<>(all, o -> true);
         ordersTable.setItems(filtered);
+        updateKpis();
         applyFilter();
+    }
+
+    private void updateKpis() {
+        int total = all.size(), pending = 0, shipped = 0, delivered = 0;
+        double revenue = 0;
+        for (Order o : all) {
+            String s = o.getStatus() == null ? "" : o.getStatus();
+            switch (s) {
+                case "Pending"   -> pending++;
+                case "Shipped"   -> shipped++;
+                case "Delivered" -> delivered++;
+            }
+            if (!"Cancelled".equalsIgnoreCase(s)) revenue += o.getTotal();
+        }
+        if (kpiTotal != null) kpiTotal.setText(String.valueOf(total));
+        if (kpiPending != null) kpiPending.setText(String.valueOf(pending));
+        if (kpiShipped != null) kpiShipped.setText(String.valueOf(shipped));
+        if (kpiDelivered != null) kpiDelivered.setText(String.valueOf(delivered));
+        if (kpiRevenue != null) kpiRevenue.setText(Money.format(revenue));
     }
 
     private void applyFilter() {
         if (filtered == null) return;
         String f = filterCombo.getValue();
-        if (f == null || "All".equals(f)) { filtered.setPredicate(o -> true); return; }
-        filtered.setPredicate(o -> f.equalsIgnoreCase(o.getStatus()));
+        String q = searchField == null || searchField.getText() == null ? "" : searchField.getText().trim().toLowerCase();
+        filtered.setPredicate(o -> {
+            if (f != null && !"All".equals(f) && !f.equalsIgnoreCase(o.getStatus())) return false;
+            if (q.isEmpty()) return true;
+            return (o.getId() != null && o.getId().toLowerCase().contains(q))
+                || (o.getUserId() != null && o.getUserId().toLowerCase().contains(q));
+        });
     }
 
     private void showItems(Order o) {
@@ -137,7 +172,7 @@ public class AdminOrdersController {
             qty.getStyleClass().add("text-muted");
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
-            Label line = new Label(String.format("$%.2f", ci.getLineTotal()));
+            Label line = new Label(Money.format(ci.getLineTotal()));
             line.getStyleClass().add("text-accent");
             row.getChildren().addAll(name, qty, spacer, line);
             detailsBox.getChildren().add(row);

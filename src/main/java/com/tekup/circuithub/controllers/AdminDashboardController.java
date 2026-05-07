@@ -4,6 +4,7 @@ import com.tekup.circuithub.models.Order;
 import com.tekup.circuithub.models.Product;
 import com.tekup.circuithub.models.User;
 import com.tekup.circuithub.utils.DataStore;
+import com.tekup.circuithub.utils.Money;
 import com.tekup.circuithub.utils.SceneManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -34,7 +35,7 @@ public class AdminDashboardController {
         }
 
         DataStore.AdminStats s = DataStore.loadAdminStats();
-        revenueValue.setText(String.format("$%.2f", s.totalRevenue()));
+        revenueValue.setText(Money.format(s.totalRevenue()));
         ordersValue.setText(String.valueOf(s.orderCount()));
         usersValue.setText(String.valueOf(s.userCount()));
         productsValue.setText(String.valueOf(s.productCount()));
@@ -64,7 +65,7 @@ public class AdminDashboardController {
             user.getStyleClass().add("text-muted");
             Label date = new Label(o.getDate());
             date.getStyleClass().add("text-secondary");
-            Label total = new Label(String.format("$%.2f", o.getTotal()));
+            Label total = new Label(Money.format(o.getTotal()));
             total.getStyleClass().add("text-primary");
             Label status = new Label(o.getStatus());
             status.getStyleClass().add(badgeClassFor(o.getStatus()));

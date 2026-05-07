@@ -4,6 +4,7 @@ import com.tekup.circuithub.models.CartItem;
 import com.tekup.circuithub.models.Order;
 import com.tekup.circuithub.models.User;
 import com.tekup.circuithub.utils.DataStore;
+import com.tekup.circuithub.utils.Money;
 import com.tekup.circuithub.utils.SceneManager;
 import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
@@ -90,7 +91,7 @@ public class OrdersController {
         Label badge = new Label(o.getStatus().toUpperCase());
         badge.getStyleClass().addAll("badge", badgeClassFor(o.getStatus()));
 
-        Label total = new Label(String.format("$%.2f", o.getTotal()));
+        Label total = new Label(Money.format(o.getTotal()));
         total.getStyleClass().add("order-total");
 
         Button toggle = new Button("▾ VIEW DETAILS");
@@ -146,7 +147,7 @@ public class OrdersController {
             Label cat = new Label(ci.getProduct().getCategory().toUpperCase());
             cat.getStyleClass().add("chip-category");
             Region sp = new Region(); HBox.setHgrow(sp, Priority.ALWAYS);
-            Label line = new Label(String.format("$%.2f", ci.getLineTotal()));
+            Label line = new Label(Money.format(ci.getLineTotal()));
             line.getStyleClass().add("price");
             row.getChildren().addAll(qty, cat, name, sp, line);
             box.getChildren().add(row);
@@ -161,7 +162,7 @@ public class OrdersController {
         totalRow.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
         Label totalLbl = new Label("TOTAL  ");
         totalLbl.getStyleClass().add("total-key");
-        Label total = new Label(String.format("$%.2f", o.getTotal()));
+        Label total = new Label(Money.format(o.getTotal()));
         total.getStyleClass().add("order-total");
         totalRow.getChildren().addAll(totalLbl, total);
         box.getChildren().add(totalRow);
