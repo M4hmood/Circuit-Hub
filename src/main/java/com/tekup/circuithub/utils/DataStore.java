@@ -1,5 +1,6 @@
 package com.tekup.circuithub.utils;
 
+import com.tekup.circuithub.models.Cart;
 import com.tekup.circuithub.models.CartItem;
 import com.tekup.circuithub.models.Order;
 import com.tekup.circuithub.models.Product;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 public class DataStore {
     private static User currentUser;
-    private static final List<CartItem> cart = new ArrayList<>();
+    private static final Cart cart = new Cart();
     private static Product selectedProduct;
 
     // Product cache — invalidated whenever admin adds/updates/deletes a product.
@@ -473,37 +474,17 @@ public class DataStore {
     }
 
     // ---- Cart (in-memory session) ----
-    public static List<CartItem> getCart() { return cart; }
+    public static Cart getCart() { return cart; }
 
-    public static void addToCart(Product p, int qty) {
-        for (CartItem ci : cart) {
-            if (ci.getProduct().getId().equals(p.getId())) {
-                ci.setQuantity(ci.getQuantity() + qty);
-                return;
-            }
-        }
-        cart.add(new CartItem(p, qty));
-    }
+    public static void addToCart(Product p, int qty) { cart.add(p, qty); }
 
-    public static void removeFromCart(String productId) {
-        cart.removeIf(ci -> ci.getProduct().getId().equals(productId));
-    }
+    public static void removeFromCart(String productId) { cart.remove(productId); }
 
-    public static void updateCartQty(String productId, int qty) {
-        for (CartItem ci : cart) {
-            if (ci.getProduct().getId().equals(productId)) {
-                if (qty <= 0) { cart.remove(ci); }
-                else { ci.setQuantity(qty); }
-                return;
-            }
-        }
-    }
+    public static void updateCartQty(String productId, int qty) { cart.updateQty(productId, qty); }
 
     public static void clearCart() { cart.clear(); }
 
-    public static double cartSubtotal() {
-        return cart.stream().mapToDouble(CartItem::getLineTotal).sum();
-    }
+    public static double cartSubtotal() { return cart.subtotal(); }
 
     // ---- Selection ----
     public static Product getSelectedProduct() { return selectedProduct; }

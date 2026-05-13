@@ -1,5 +1,6 @@
 package com.tekup.circuithub.controllers;
 
+import com.tekup.circuithub.models.Cart;
 import com.tekup.circuithub.models.CartItem;
 import com.tekup.circuithub.models.Order;
 import com.tekup.circuithub.models.User;
@@ -47,7 +48,7 @@ public class CartController {
 
     private void render() {
         itemsBox.getChildren().clear();
-        List<CartItem> cart = DataStore.getCart();
+        Cart cart = DataStore.getCart();
 
         if (cart.isEmpty()) {
             VBox empty = new VBox(8);
@@ -62,12 +63,12 @@ public class CartController {
             itemsBox.getChildren().add(empty);
             checkoutBtn.setDisable(true);
         } else {
-            for (CartItem ci : new ArrayList<>(cart)) itemsBox.getChildren().add(buildRow(ci));
+            for (CartItem ci : new ArrayList<>(cart.getItems())) itemsBox.getChildren().add(buildRow(ci));
             checkoutBtn.setDisable(false);
             SceneManager.staggerIn(itemsBox.getChildren());
         }
 
-        itemCountLabel.setText("// " + cart.stream().mapToInt(CartItem::getQuantity).sum() + " items");
+        itemCountLabel.setText("// " + cart.itemCount() + " items");
         double subtotal = DataStore.cartSubtotal();
         double tax = subtotal * TAX_RATE;
         double total = subtotal + tax;
@@ -137,7 +138,7 @@ public class CartController {
         alert.setTitle("Confirm Order");
         alert.setHeaderText("Place this order?");
         alert.setContentText(String.format("Total: %s (incl. 10%% tax)%n%nItems: %d",
-                Money.format(total), DataStore.getCart().stream().mapToInt(CartItem::getQuantity).sum()));
+                Money.format(total), DataStore.getCart().itemCount()));
         alert.getDialogPane().getStylesheets().add(
                 getClass().getResource("/com/tekup/circuithub/styles/app.css").toExternalForm());
 
@@ -150,7 +151,7 @@ public class CartController {
         Order order = new Order();
         order.setId("ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         order.setUserId(u == null ? "guest" : u.getId());
-        order.setItems(new ArrayList<>(DataStore.getCart()));
+        order.setItems(new ArrayList<>(DataStore.getCart().getItems()));
         order.setTotal(total);
         order.setDate(LocalDate.now().toString());
         order.setStatus("Pending");

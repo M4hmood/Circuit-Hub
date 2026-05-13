@@ -1,0 +1,126 @@
+<mxfile host="Electron" agent="Claude">
+  <diagram id="circuithub-domain-model" name="CircuitHub Domain Model">
+    <mxGraphModel dx="1285" dy="765" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#e2e8f0;fontSize=14;" value="&lt;b style=&quot;font-size:22px;color:#00ff9c&quot;&gt;CircuitHub — Domain Model&lt;/b&gt;&#xa;&lt;span style=&quot;color:#94a3b8;font-size:13px&quot;&gt;The core entities behind the storefront: who buys what, in what quantity, and as part of which order.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="60" width="1090" x="280" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="User" parent="1" style="text;html=1;strokeColor=#00ff9c;fillColor=#0f172a;align=left;verticalAlign=top;spacingLeft=14;spacingTop=10;spacingRight=10;spacingBottom=10;rounded=1;arcSize=8;fontColor=#e2e8f0;fontSize=12;strokeWidth=2;shadow=1;" value="&lt;b style=&quot;font-size:15px;color:#00ff9c&quot;&gt;User&lt;/b&gt;&#xa;&lt;span style=&quot;color:#64748b;font-size:10px&quot;&gt;the customer or admin&lt;/span&gt;&#xa;──────────────────────&#xa;- id : String&#xa;- fullName : String&#xa;- email : String&#xa;- passwordHash : String&#xa;- joinDate : String&#xa;- role : String   &lt;span style=&quot;color:#64748b&quot;&gt;// USER | ADMIN&lt;/span&gt;&#xa;──────────────────────&#xa;+ isAdmin() : boolean" vertex="1">
+          <mxGeometry height="240" width="280" x="80" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="Cart" parent="1" style="text;html=1;strokeColor=#00ff9c;fillColor=#0f172a;align=left;verticalAlign=top;spacingLeft=14;spacingTop=10;spacingRight=10;spacingBottom=10;rounded=1;arcSize=8;fontColor=#e2e8f0;fontSize=12;strokeWidth=2;shadow=1;" value="&lt;b style=&quot;font-size:15px;color:#00ff9c&quot;&gt;Cart&lt;/b&gt;&#xa;&lt;span style=&quot;color:#64748b;font-size:10px&quot;&gt;in-memory, session-scoped&lt;/span&gt;&#xa;──────────────────────&#xa;- items : List&lt;CartItem&gt;&#xa;──────────────────────&#xa;+ add(p : Product, qty : int) : void&#xa;+ remove(productId : String) : void&#xa;+ updateQty(productId, qty) : void&#xa;+ clear() : void&#xa;+ subtotal() : double&#xa;+ itemCount() : int&#xa;+ isEmpty() : boolean" vertex="1">
+          <mxGeometry height="260" width="300" x="480" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="Order" parent="1" style="text;html=1;strokeColor=#00ff9c;fillColor=#0f172a;align=left;verticalAlign=top;spacingLeft=14;spacingTop=10;spacingRight=10;spacingBottom=10;rounded=1;arcSize=8;fontColor=#e2e8f0;fontSize=12;strokeWidth=2;shadow=1;" value="&lt;b style=&quot;font-size:15px;color:#00ff9c&quot;&gt;Order&lt;/b&gt;&#xa;&lt;span style=&quot;color:#64748b;font-size:10px&quot;&gt;a completed purchase&lt;/span&gt;&#xa;──────────────────────&#xa;- id : String&#xa;- userId : String&#xa;- items : List&lt;CartItem&gt;&#xa;- total : double&#xa;- date : String&#xa;- status : String   &lt;span style=&quot;color:#64748b&quot;&gt;// Pending | Shipped&lt;/span&gt;" vertex="1">
+          <mxGeometry height="220" width="320" x="900" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="CartItem" parent="1" style="text;html=1;strokeColor=#00ff9c;fillColor=#0f172a;align=left;verticalAlign=top;spacingLeft=14;spacingTop=10;spacingRight=10;spacingBottom=10;rounded=1;arcSize=8;fontColor=#e2e8f0;fontSize=12;strokeWidth=2;shadow=1;" value="&lt;b style=&quot;font-size:15px;color:#00ff9c&quot;&gt;CartItem&lt;/b&gt;&#xa;&lt;span style=&quot;color:#64748b;font-size:10px&quot;&gt;a product + a quantity (one line)&lt;/span&gt;&#xa;──────────────────────&#xa;- product : Product&#xa;- quantity : int&#xa;──────────────────────&#xa;+ getLineTotal() : double   &lt;span style=&quot;color:#64748b&quot;&gt;// price × qty&lt;/span&gt;" vertex="1">
+          <mxGeometry height="160" width="320" x="690" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="Product" parent="1" style="text;html=1;strokeColor=#00ff9c;fillColor=#0f172a;align=left;verticalAlign=top;spacingLeft=14;spacingTop=10;spacingRight=10;spacingBottom=10;rounded=1;arcSize=8;fontColor=#e2e8f0;fontSize=12;strokeWidth=2;shadow=1;" value="&lt;b style=&quot;font-size:15px;color:#00ff9c&quot;&gt;Product&lt;/b&gt;&#xa;&lt;span style=&quot;color:#64748b;font-size:10px&quot;&gt;an embedded-systems component for sale&lt;/span&gt;&#xa;──────────────────────&#xa;- id : String&#xa;- name : String&#xa;- category : String&#xa;- price : double   &lt;span style=&quot;color:#64748b&quot;&gt;// in TND&lt;/span&gt;&#xa;- description : String&#xa;- specs : Map&lt;String, String&gt;&#xa;- imageUrl : String&#xa;- imageData : byte[]&#xa;- stock : int" vertex="1">
+          <mxGeometry height="260" width="320" x="80" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_user_cart" edge="1" parent="1" source="User" style="endArrow=none;startArrow=none;strokeColor=#94a3b8;strokeWidth=2;fontColor=#e2e8f0;fontSize=12;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="Cart" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_user_cart_lbl_mid" connectable="0" parent="rel_user_cart" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#cbd5e1;fontSize=12;fontStyle=2;fillColor=#0f172a;" value="has" vertex="1">
+          <mxGeometry relative="1" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_user_cart_lbl_src" connectable="0" parent="rel_user_cart" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#00ff9c;fontSize=12;" value="1" vertex="1">
+          <mxGeometry relative="1" x="-0.85" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_user_cart_lbl_tgt" connectable="0" parent="rel_user_cart" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#00ff9c;fontSize=12;" value="1" vertex="1">
+          <mxGeometry relative="1" x="0.85" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_user_order" edge="1" parent="1" source="User" style="endArrow=none;startArrow=none;strokeColor=#94a3b8;strokeWidth=2;fontColor=#e2e8f0;fontSize=12;exitX=1;exitY=0.25;entryX=0;entryY=0.25;curved=0;" target="Order" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="430" y="150" />
+              <mxPoint x="860" y="150" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_user_order_lbl_mid" connectable="0" parent="rel_user_order" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#cbd5e1;fontSize=12;fontStyle=2;fillColor=#0f172a;" value="places" vertex="1">
+          <mxGeometry relative="1" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_user_order_lbl_src" connectable="0" parent="rel_user_order" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#00ff9c;fontSize=12;" value="1" vertex="1">
+          <mxGeometry relative="1" x="-0.85" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_user_order_lbl_tgt" connectable="0" parent="rel_user_order" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#00ff9c;fontSize=12;" value="0..*" vertex="1">
+          <mxGeometry relative="1" x="0.85" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_cart_cartitem" edge="1" parent="1" source="Cart" style="endArrow=none;startArrow=diamondThin;startFill=1;startSize=16;strokeColor=#00ff9c;strokeWidth=2;fontColor=#e2e8f0;fontSize=12;exitX=0.5;exitY=1;entryX=0.3;entryY=0;" target="CartItem" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_cart_cartitem_lbl_mid" connectable="0" parent="rel_cart_cartitem" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#cbd5e1;fontSize=12;fontStyle=2;fillColor=#0f172a;" value="contains" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_cart_cartitem_lbl_src" connectable="0" parent="rel_cart_cartitem" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#00ff9c;fontSize=12;" value="1" vertex="1">
+          <mxGeometry relative="1" x="-0.7" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_cart_cartitem_lbl_tgt" connectable="0" parent="rel_cart_cartitem" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#00ff9c;fontSize=12;" value="0..*" vertex="1">
+          <mxGeometry relative="1" x="0.7" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_order_cartitem" edge="1" parent="1" source="Order" style="endArrow=none;startArrow=diamondThin;startFill=0;startSize=16;strokeColor=#00ff9c;strokeWidth=2;fontColor=#e2e8f0;fontSize=12;exitX=0.5;exitY=1;entryX=0.7;entryY=0;" target="CartItem" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_order_cartitem_lbl_mid" connectable="0" parent="rel_order_cartitem" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#cbd5e1;fontSize=12;fontStyle=2;fillColor=#0f172a;" value="contains" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_order_cartitem_lbl_src" connectable="0" parent="rel_order_cartitem" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#00ff9c;fontSize=12;" value="1" vertex="1">
+          <mxGeometry relative="1" x="-0.7" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_order_cartitem_lbl_tgt" connectable="0" parent="rel_order_cartitem" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#00ff9c;fontSize=12;" value="1..*" vertex="1">
+          <mxGeometry relative="1" x="0.7" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_cartitem_product" edge="1" parent="1" source="CartItem" style="endArrow=none;startArrow=diamondThin;startFill=0;startSize=16;strokeColor=#94a3b8;strokeWidth=2;fontColor=#e2e8f0;fontSize=12;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" target="Product" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_cartitem_product_lbl_mid" connectable="0" parent="rel_cartitem_product" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#cbd5e1;fontSize=12;fontStyle=2;fillColor=#0f172a;" value="refers to" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_cartitem_product_lbl_src" connectable="0" parent="rel_cartitem_product" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#00ff9c;fontSize=12;" value="*" vertex="1">
+          <mxGeometry relative="1" x="-0.85" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_cartitem_product_lbl_tgt" connectable="0" parent="rel_cartitem_product" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontColor=#00ff9c;fontSize=12;" value="1" vertex="1">
+          <mxGeometry relative="1" x="0.85" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend" parent="1" style="text;html=1;strokeColor=#334155;fillColor=#1e293b;align=left;verticalAlign=top;spacingLeft=14;spacingTop=10;spacingRight=10;spacingBottom=10;rounded=1;arcSize=8;fontColor=#e2e8f0;fontSize=11;" value="&lt;b style=&quot;color:#00ff9c;font-size:13px&quot;&gt;Legend&lt;/b&gt;&#xa;────────────────────&#xa;&lt;b&gt;───&lt;/b&gt; &lt;span style=&quot;color:#cbd5e1&quot;&gt;association&lt;/span&gt;&#xa;&lt;span style=&quot;color:#64748b;font-size:10px&quot;&gt;User → Cart, User → Order&lt;/span&gt;&#xa;&#xa;&lt;b style=&quot;color:#00ff9c&quot;&gt;◆──&lt;/b&gt; &lt;span style=&quot;color:#cbd5e1&quot;&gt;composition&lt;/span&gt;&#xa;&lt;span style=&quot;color:#64748b;font-size:10px&quot;&gt;CartItems live only inside their Cart/Order&lt;/span&gt;&#xa;&#xa;&lt;b&gt;◇──&lt;/b&gt; &lt;span style=&quot;color:#cbd5e1&quot;&gt;aggregation&lt;/span&gt;&#xa;&lt;span style=&quot;color:#64748b;font-size:10px&quot;&gt;Product exists independently of CartItem&lt;/span&gt;" vertex="1">
+          <mxGeometry height="240" width="280" x="1290" y="540" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

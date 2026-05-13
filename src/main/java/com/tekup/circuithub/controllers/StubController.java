@@ -12,7 +12,7 @@ public class StubController {
     @FXML
     public void initialize() {
         if (info != null) {
-            int n = DataStore.getCart().size();
+            int n = DataStore.getCart().itemCount();
             info.setText("$ cart_items: " + n + "  ·  subtotal: $" + String.format("%.2f", DataStore.cartSubtotal()));
         }
     }

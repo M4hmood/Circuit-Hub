@@ -148,6 +148,7 @@ self-promotion is impossible by design.
   in `DatabaseConfig` which handles comments and string literals correctly.
 - Don't add per-product spec queries inside a product load loop — always use
   the JOIN approach in `loadProducts()` to keep it a single round-trip.
+- Don't call heavy DB methods directly in `initialize()` without caching — it blocks the FX thread on every navigation. Use the product cache pattern; add equivalent caches for other hot data if needed.
 
 ## Testing changes
 
