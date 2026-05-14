@@ -1,17 +1,17 @@
 package com.tekup.circuithub.controllers;
 
-import com.tekup.circuithub.models.User;
 import com.tekup.circuithub.utils.DataStore;
 import com.tekup.circuithub.utils.Hashing;
+import com.tekup.circuithub.utils.Mailer;
 import com.tekup.circuithub.utils.SceneManager;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
-
-import java.util.UUID;
 
 public class SignUpController {
     @FXML private TextField nameField;
@@ -21,6 +21,7 @@ public class SignUpController {
     @FXML private ProgressBar strengthBar;
     @FXML private Label strengthLabel;
     @FXML private Label errorLabel;
+    @FXML private Button submitButton;
 
     @FXML
     public void initialize() {
@@ -67,10 +68,24 @@ public class SignUpController {
             return;
         }
 
-        User u = new User(UUID.randomUUID().toString(), name, email, Hashing.sha256(pw));
-        DataStore.addUser(u);
-        DataStore.setCurrentUser(u);
-        SceneManager.getInstance().switchTo("dashboard", true);
+        String code = DataStore.generateVerificationCode();
+        DataStore.putPending(name, email, Hashing.sha256(pw), code);
+
+        if (submitButton != null) submitButton.setDisable(true);
+        errorLabel.setText("Sending verification code…");
+        errorLabel.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 12px;");
+
+        Mailer.sendVerificationCode(email, code).whenComplete((ok, err) -> Platform.runLater(() -> {
+            if (submitButton != null) submitButton.setDisable(false);
+            if (err != null) {
+                DataStore.removePending(email);
+                errorLabel.setStyle("-fx-text-fill: #EF4444; -fx-font-size: 12px;");
+                errorLabel.setText("Couldn't send email: " + rootMessage(err));
+                return;
+            }
+            VerifyEmailController.setPendingEmailHint(email);
+            SceneManager.getInstance().switchTo("verify-email", true);
+        }));
     }
 
     @FXML
@@ -87,6 +102,13 @@ public class SignUpController {
         emailField.getStyleClass().remove("invalid");
         passwordField.getStyleClass().remove("invalid");
         confirmField.getStyleClass().remove("invalid");
+        errorLabel.setStyle("-fx-text-fill: #EF4444; -fx-font-size: 12px;");
         errorLabel.setText(" ");
+    }
+
+    private static String rootMessage(Throwable t) {
+        Throwable r = t;
+        while (r.getCause() != null) r = r.getCause();
+        return r.getMessage() == null ? r.getClass().getSimpleName() : r.getMessage();
     }
 }

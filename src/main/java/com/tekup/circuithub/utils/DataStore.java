@@ -6,11 +6,13 @@ import com.tekup.circuithub.models.Order;
 import com.tekup.circuithub.models.Product;
 import com.tekup.circuithub.models.User;
 
+import java.security.SecureRandom;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DataStore {
     private static User currentUser;
@@ -21,6 +23,53 @@ public class DataStore {
     private static List<Product> productCache = null;
 
     public static void invalidateProductCache() { productCache = null; }
+
+    // ---- Pending email verifications (in-memory, 10-min TTL) ----
+    private static final long VERIFICATION_TTL_MS = 10 * 60 * 1000L;
+    private static final SecureRandom RNG = new SecureRandom();
+    private static final Map<String, PendingRegistration> pending = new ConcurrentHashMap<>();
+
+    public static final class PendingRegistration {
+        public final String fullName;
+        public final String email;
+        public final String passwordHash;
+        public final String code;
+        public final long expiresAt;
+
+        public PendingRegistration(String fullName, String email, String passwordHash, String code, long expiresAt) {
+            this.fullName = fullName;
+            this.email = email;
+            this.passwordHash = passwordHash;
+            this.code = code;
+            this.expiresAt = expiresAt;
+        }
+
+        public boolean isExpired() { return System.currentTimeMillis() > expiresAt; }
+    }
+
+    public static String generateVerificationCode() {
+        return String.format("%06d", RNG.nextInt(1_000_000));
+    }
+
+    public static PendingRegistration putPending(String fullName, String email, String passwordHash, String code) {
+        PendingRegistration p = new PendingRegistration(
+                fullName, email, passwordHash, code,
+                System.currentTimeMillis() + VERIFICATION_TTL_MS);
+        pending.put(email.toLowerCase(), p);
+        return p;
+    }
+
+    public static PendingRegistration getPending(String email) {
+        if (email == null) return null;
+        PendingRegistration p = pending.get(email.toLowerCase());
+        if (p == null) return null;
+        if (p.isExpired()) { pending.remove(email.toLowerCase()); return null; }
+        return p;
+    }
+
+    public static void removePending(String email) {
+        if (email != null) pending.remove(email.toLowerCase());
+    }
 
     public static void init() {
         DatabaseConfig.initializeDatabase();

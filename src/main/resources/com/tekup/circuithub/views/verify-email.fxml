@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.tekup.circuithub.controllers.VerifyEmailController"
+           styleClass="welcome-root"
+           prefWidth="1280" prefHeight="800">
+
+    <VBox styleClass="panel" alignment="TOP_CENTER" spacing="14"
+          maxWidth="460" maxHeight="560">
+        <padding><Insets top="30" right="32" bottom="28" left="32"/></padding>
+
+        <Label text="Verify your email" styleClass="logo-label" style="-fx-font-size: 24px;"/>
+        <Label text="We sent a 6-digit code to:" styleClass="text-secondary"
+               style="-fx-font-size: 13px;"/>
+        <Label fx:id="emailLabel" text=" " style="-fx-text-fill: #10B981; -fx-font-size: 13px;"/>
+
+        <Region prefHeight="8"/>
+
+        <StackPane prefHeight="48">
+            <TextField fx:id="codeField" promptText="000000"
+                       styleClass="terminal-field"
+                       style="-fx-padding: 12 12 12 12; -fx-font-size: 22px; -fx-alignment: center; -fx-letter-spacing: 8;"/>
+        </StackPane>
+
+        <Label fx:id="statusLabel" text=" "
+               style="-fx-text-fill: #94A3B8; -fx-font-size: 12px;"/>
+        <Label fx:id="errorLabel" text=" "
+               style="-fx-text-fill: #EF4444; -fx-font-size: 12px;"/>
+
+        <Button fx:id="verifyButton" text="Verify and create account" styleClass="btn-primary"
+                onAction="#onVerify" maxWidth="Infinity"/>
+
+        <HBox alignment="CENTER" spacing="10">
+            <Hyperlink fx:id="resendLink" text="Resend code" onAction="#onResend"
+                       style="-fx-text-fill: #3B82F6; -fx-border-color: transparent;"/>
+            <Label text="·" styleClass="text-secondary"/>
+            <Hyperlink text="Back to sign up" onAction="#onBack"
+                       style="-fx-text-fill: #94A3B8; -fx-border-color: transparent;"/>
+        </HBox>
+    </VBox>
+</StackPane>

@@ -62,7 +62,7 @@
         <Label fx:id="errorLabel" text=" "
                style="-fx-text-fill: #EF4444; -fx-font-size: 12px;"/>
 
-        <Button text="Create Account" styleClass="btn-primary"
+        <Button fx:id="submitButton" text="Create Account" styleClass="btn-primary"
                 onAction="#onSignUp" maxWidth="Infinity"/>
 
         <HBox alignment="CENTER" spacing="6">

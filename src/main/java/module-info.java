@@ -4,6 +4,7 @@ module com.tekup.circuithub {
     requires javafx.graphics;
     requires java.desktop;
     requires java.sql;
+    requires jakarta.mail;
 
     opens com.tekup.circuithub to javafx.fxml;
     opens com.tekup.circuithub.controllers to javafx.fxml;

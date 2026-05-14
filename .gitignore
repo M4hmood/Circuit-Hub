@@ -39,3 +39,6 @@ build/
 
 ### Claude ###
 .claude/settings.local.json
+
+### Secrets ###
+src/main/resources/com/tekup/circuithub/mail.properties
